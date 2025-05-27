@@ -24,7 +24,6 @@ const timeframes = [
 ];
 
 function App() {
-  // State
   const [workouts, setWorkouts] = useState([]);
   const [category, setCategory] = useState('');
   const [exercise, setExercise] = useState('');
@@ -36,7 +35,10 @@ function App() {
   const [timeframe, setTimeframe] = useState('lastWeek');
   const [customRange, setCustomRange] = useState({ start: '', end: '' });
 
-  // Load workouts from localStorage on mount
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem('darkMode') === 'true';
+  });
+
   useEffect(() => {
     const saved = localStorage.getItem('workouts');
     if (saved) {
@@ -48,27 +50,28 @@ function App() {
     }
   }, []);
 
-  // Save workouts to localStorage on change
   useEffect(() => {
     localStorage.setItem('workouts', JSON.stringify(workouts));
   }, [workouts]);
 
-  // Filter workouts based on filterCategory and timeframe
+  useEffect(() => {
+    document.body.classList.toggle('dark-mode', darkMode);
+    localStorage.setItem('darkMode', darkMode);
+  }, [darkMode]);
+
   const filteredWorkouts = workouts.filter(w => {
     if (filterCategory !== 'all' && w.category !== filterCategory) return false;
 
     if (timeframe === 'custom') {
-      if (!customRange.start || !customRange.end) return true; // no range selected yet
+      if (!customRange.start || !customRange.end) return true;
       return w.date >= new Date(customRange.start) && w.date <= new Date(customRange.end);
     }
 
     return filterWorkoutsByDate(w.date, timeframe, workouts);
   });
 
-  // Populate exercise list for selected category
   const currentExercises = category ? presetWorkouts[category] || [] : [];
 
-  // Handlers
   function resetForm() {
     setCategory('');
     setExercise('');
@@ -120,10 +123,14 @@ function App() {
     }
   }
 
-  // UI render
   return (
     <div className="app-container">
-      <header><h1>RepFlow Workout Tracker</h1></header>
+      <header>
+        <h1>RepFlow Workout Tracker</h1>
+        <button onClick={() => setDarkMode(prev => !prev)}>
+          {darkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
+        </button>
+      </header>
 
       <section className="workout-entry">
         <form onSubmit={handleSubmit}>

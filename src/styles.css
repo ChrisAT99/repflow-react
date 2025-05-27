@@ -6,6 +6,51 @@ body {
   color: #222;
 }
 
+body.dark-mode {
+  background-color: #1e1e1e;
+  color: #f0f0f0;
+}
+
+body.dark-mode .app-container {
+  background-color: #1e1e1e;
+}
+
+body.dark-mode form,
+body.dark-mode .filter-section,
+body.dark-mode table {
+  background-color: #2a2a2a;
+  color: #f0f0f0;
+  box-shadow: 0 0 10px rgba(255,255,255,0.05);
+}
+
+body.dark-mode input,
+body.dark-mode select {
+  background-color: #333;
+  color: #f0f0f0;
+  border: 1px solid #555;
+}
+
+body.dark-mode th {
+  background-color: #444;
+}
+
+body.dark-mode tr:hover {
+  background-color: #333;
+}
+
+body.dark-mode button {
+  background-color: #444;
+  color: #fff;
+}
+
+body.dark-mode button:hover {
+  background-color: #666;
+}
+
+body.dark-mode footer {
+  color: #aaa;
+}
+
 .app-container {
   max-width: 900px;
   margin: 0 auto;
