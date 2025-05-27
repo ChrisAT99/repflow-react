@@ -1,4 +1,3 @@
-// App.js
 import React, { useState, useEffect } from 'react';
 import { formatDate, filterWorkoutsByDate } from './utils';
 import './styles.css';
@@ -14,57 +13,6 @@ const presetWorkouts = {
   cardio: ['Running', 'Cycling', 'Jump Rope', 'Rowing', 'Swimming'],
   other: ['Yoga', 'Stretching', 'Foam Rolling']
 };
-
-const presetPrograms = [
-  {
-    id: 'push-pull-legs',
-    title: 'Push Pull Legs',
-    exercises: [
-      {
-        name: 'Bench Press',
-        substitutes: ['Push-ups', 'Chest Fly'],
-        defaultReps: 10,
-        defaultWeight: 40,
-      },
-      {
-        name: 'Overhead Press',
-        substitutes: ['Lateral Raises', 'Front Raises'],
-        defaultReps: 8,
-        defaultWeight: 20,
-      },
-      {
-        name: 'Deadlift',
-        substitutes: ['Leg Press', 'Bent-over Row'],
-        defaultReps: 6,
-        defaultWeight: 60,
-      }
-    ],
-  },
-  {
-    id: 'full-body',
-    title: 'Full Body Blast',
-    exercises: [
-      {
-        name: 'Squats',
-        substitutes: ['Lunges', 'Leg Curl'],
-        defaultReps: 12,
-        defaultWeight: 50,
-      },
-      {
-        name: 'Pull-Ups',
-        substitutes: ['Lat Pulldown', 'Seated Row'],
-        defaultReps: 8,
-        defaultWeight: 0,
-      },
-      {
-        name: 'Plank',
-        substitutes: ['Crunches', 'Sit-ups'],
-        defaultReps: 1, // reps could mean sets here or seconds - up to user
-        defaultWeight: 0,
-      }
-    ],
-  }
-];
 
 const categories = Object.keys(presetWorkouts);
 
@@ -88,15 +36,12 @@ function App() {
   const [timeframe, setTimeframe] = useState('lastWeek');
   const [customRange, setCustomRange] = useState({ start: '', end: '' });
 
-  const [showHistory, setShowHistory] = useState(false);
+  // Dark mode state
   const [darkMode, setDarkMode] = useState(false);
 
-  // New states for Workout Programs
-  const [showPrograms, setShowPrograms] = useState(false);
-  const [selectedProgramId, setSelectedProgramId] = useState(null);
-  const [programHistoryFilter, setProgramHistoryFilter] = useState('all'); // 'all' or programId
+  // History visibility default false (hidden)
+  const [showHistory, setShowHistory] = useState(false);
 
-  // Load workouts from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem('workouts');
     if (saved) {
@@ -106,44 +51,44 @@ function App() {
       }));
       setWorkouts(parsed);
     }
+
     // Load dark mode preference if saved
     const savedDark = localStorage.getItem('darkMode');
-    if (savedDark === 'true') setDarkMode(true);
+    if (savedDark) setDarkMode(JSON.parse(savedDark));
   }, []);
 
-  // Save workouts and darkMode to localStorage on change
   useEffect(() => {
     localStorage.setItem('workouts', JSON.stringify(workouts));
   }, [workouts]);
 
   useEffect(() => {
-    localStorage.setItem('darkMode', darkMode);
+    localStorage.setItem('darkMode', JSON.stringify(darkMode));
+    if (darkMode) {
+      document.documentElement.classList.add('dark-mode');
+    } else {
+      document.documentElement.classList.remove('dark-mode');
+    }
   }, [darkMode]);
 
-  // Filter workouts based on filterCategory, timeframe, and programHistoryFilter
   const filteredWorkouts = workouts.filter(w => {
     if (filterCategory !== 'all' && w.category !== filterCategory) return false;
-    if (programHistoryFilter !== 'all' && w.programId !== programHistoryFilter) return false;
 
     if (timeframe === 'custom') {
-      if (!customRange.start || !customRange.end) return true; // no range selected yet
+      if (!customRange.start || !customRange.end) return true;
       return w.date >= new Date(customRange.start) && w.date <= new Date(customRange.end);
     }
 
     return filterWorkoutsByDate(w.date, timeframe, workouts);
   });
 
-  // Populate exercise list for selected category
   const currentExercises = category ? presetWorkouts[category] || [] : [];
 
-  // Handlers
   function resetForm() {
     setCategory('');
     setExercise('');
     setReps('');
     setWeight('');
     setEditIndex(null);
-    setSelectedProgramId(null);
   }
 
   function handleSubmit(e) {
@@ -159,8 +104,7 @@ function App() {
       exercise,
       reps: Number(reps),
       weight: Number(weight),
-      date: new Date(),
-      programId: selectedProgramId, // tag with program if any
+      date: new Date()
     };
 
     if (editIndex !== null) {
@@ -181,7 +125,6 @@ function App() {
     setReps(w.reps);
     setWeight(w.weight);
     setEditIndex(index);
-    setSelectedProgramId(w.programId || null);
   }
 
   function handleDelete(index) {
@@ -191,62 +134,31 @@ function App() {
     }
   }
 
-  // Program selection: adds all exercises from the selected program to the workout list for today
-  function handleSelectProgram(programId) {
-    const program = presetPrograms.find(p => p.id === programId);
-    if (!program) return;
-
-    // We add all program exercises to workouts for today with default reps and weights
-    const today = new Date();
-    const newEntries = program.exercises.map(ex => ({
-      category: '', // no category here because programs can mix exercises from various categories
-      exercise: ex.name,
-      reps: ex.defaultReps,
-      weight: ex.defaultWeight,
-      date: today,
-      programId: program.id,
-    }));
-
-    setWorkouts(prev => [...prev, ...newEntries]);
-    setShowPrograms(false);
-    setShowHistory(true);
-    setProgramHistoryFilter(program.id);
-  }
-
-  // Show history filtered by program
-  function handleShowProgramHistory(programId) {
-    setProgramHistoryFilter(programId);
-    setShowHistory(true);
-    setShowPrograms(false);
-  }
-
   return (
-    <div className={`app-container ${darkMode ? 'dark' : ''}`}>
+    <div className="app-container">
       <header>
         <h1>RepFlow Workout Tracker</h1>
-
-        <div className="top-buttons">
-          <button onClick={() => setDarkMode(d => !d)}>
-            {darkMode ? 'Light Mode' : 'Dark Mode'}
-          </button>
-
-          <button onClick={() => {
-            setShowHistory(h => !h);
-            if (showPrograms) setShowPrograms(false);
-            setProgramHistoryFilter('all'); // reset program history filter when toggling general history
-          }}>
-            {showHistory ? 'Hide History' : 'Show History'}
-          </button>
-
-          <button onClick={() => {
-            setShowPrograms(p => !p);
-            if (showHistory) setShowHistory(false);
-            setProgramHistoryFilter('all');
-          }}>
-            {showPrograms ? 'Hide Programs' : 'Workout Programs'}
-          </button>
-        </div>
       </header>
+
+      {/* Buttons container */}
+      <div className="buttons-container" style={{ marginBottom: '1rem', textAlign: 'center' }}>
+        <button
+          className="toggle-history-button"
+          onClick={() => setShowHistory(prev => !prev)}
+          aria-pressed={showHistory}
+        >
+          {showHistory ? 'Hide History' : 'Show History'}
+        </button>
+
+        <button
+          className="toggle-darkmode-button"
+          onClick={() => setDarkMode(prev => !prev)}
+          aria-pressed={darkMode}
+          style={{ marginLeft: '1rem' }}
+        >
+          {darkMode ? 'Light Mode' : 'Dark Mode'}
+        </button>
+      </div>
 
       <section className="workout-entry">
         <form onSubmit={handleSubmit}>
@@ -256,10 +168,8 @@ function App() {
               onChange={e => {
                 setCategory(e.target.value);
                 setExercise('');
-                setSelectedProgramId(null);
               }}
               required
-              disabled={selectedProgramId !== null} // disable when adding program exercises
             >
               <option value="">Select category</option>
               {categories.map(cat => (
@@ -275,7 +185,6 @@ function App() {
               onChange={e => setExercise(e.target.value)}
               placeholder="Select or type exercise"
               required
-              disabled={selectedProgramId !== null} // disable manual edit when adding program exercises
             />
             <datalist id="exerciseList">
               {currentExercises.map(ex => (
@@ -305,43 +214,15 @@ function App() {
             />
           </label>
 
-          <button type="submit">{editIndex !== null ? 'Save Workout' : 'Add Workout'}</button>
+          <button type="submit">{editIndex !== null ? 'Update Workout' : 'Add Workout'}</button>
           {editIndex !== null && <button type="button" onClick={resetForm}>Cancel Edit</button>}
         </form>
       </section>
 
-      {/* Workout Programs panel */}
-      {showPrograms && (
-        <section className="programs-panel">
-          <h2>Workout Programs</h2>
-          {presetPrograms.map(program => (
-            <div key={program.id} className="program-card">
-              <h3>{program.title}</h3>
-              <button onClick={() => handleSelectProgram(program.id)}>Select Program</button>
-              <button onClick={() => handleShowProgramHistory(program.id)}>Show History</button>
-
-              <ul className="program-exercises">
-                {program.exercises.map((ex, i) => (
-                  <li key={i}>
-                    <strong>{ex.name}</strong> (Reps: {ex.defaultReps}, Weight: {ex.defaultWeight} kg)
-                    {ex.substitutes.length > 0 && (
-                      <div className="substitutes">Substitutes: {ex.substitutes.join(', ')}</div>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </section>
-      )}
-
-      {/* History panel */}
       {showHistory && (
-        <section className="history-panel">
-          <h2>Workout History {programHistoryFilter !== 'all' && `- Program: ${presetPrograms.find(p => p.id === programHistoryFilter)?.title || ''}`}</h2>
-
-          <div className="filters">
-            <label>Category Filter:
+        <>
+          <section className="filter-section">
+            <label>Filter by Category:
               <select
                 value={filterCategory}
                 onChange={e => setFilterCategory(e.target.value)}
@@ -353,7 +234,7 @@ function App() {
               </select>
             </label>
 
-            <label>Timeframe:
+            <label>Filter by Timeframe:
               <select
                 value={timeframe}
                 onChange={e => setTimeframe(e.target.value)}
@@ -366,46 +247,64 @@ function App() {
 
             {timeframe === 'custom' && (
               <div className="custom-date-range">
-                <label>Start Date:
+                <label>Start:
                   <input
                     type="date"
                     value={customRange.start}
-                    onChange={e => setCustomRange(r => ({ ...r, start: e.target.value }))}
+                    onChange={e => setCustomRange(prev => ({ ...prev, start: e.target.value }))}
                   />
                 </label>
-                <label>End Date:
+                <label>End:
                   <input
                     type="date"
                     value={customRange.end}
-                    onChange={e => setCustomRange(r => ({ ...r, end: e.target.value }))}
+                    onChange={e => setCustomRange(prev => ({ ...prev, end: e.target.value }))}
                   />
                 </label>
               </div>
             )}
-          </div>
+          </section>
 
-          {filteredWorkouts.length === 0 ? (
-            <p>No workouts found for the selected filters.</p>
-          ) : (
-            <ul className="workout-history-list">
-              {filteredWorkouts.map((w, i) => (
-                <li key={i} className="workout-history-item">
-                  <div>
-                    <strong>{w.exercise}</strong> — {w.reps} reps @ {w.weight} kg
-                    {w.category && <span> [{w.category}]</span>}
-                    {w.programId && (
-                      <span className="program-tag">Program: {presetPrograms.find(p => p.id === w.programId)?.title || w.programId}</span>
-                    )}
-                  </div>
-                  <div className="date">{formatDate(w.date)}</div>
-                  <button onClick={() => handleEdit(i)}>Edit</button>
-                  <button onClick={() => handleDelete(i)}>Delete</button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
+          <section className="workout-list">
+            <h2>Workouts</h2>
+            {filteredWorkouts.length === 0 ? (
+              <p>No workouts found.</p>
+            ) : (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Category</th>
+                    <th>Exercise</th>
+                    <th>Reps</th>
+                    <th>Weight (kg)</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredWorkouts.map((w, i) => (
+                    <tr key={i}>
+                      <td>{formatDate(w.date)}</td>
+                      <td>{w.category.charAt(0).toUpperCase() + w.category.slice(1)}</td>
+                      <td>{w.exercise}</td>
+                      <td>{w.reps}</td>
+                      <td>{w.weight.toFixed(1)}</td>
+                      <td>
+                        <button onClick={() => handleEdit(workouts.indexOf(w))}>Edit</button>
+                        <button onClick={() => handleDelete(workouts.indexOf(w))}>Delete</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </section>
+        </>
       )}
+
+      <footer>
+        <p>RepFlow &copy; 2025</p>
+      </footer>
     </div>
   );
 }
