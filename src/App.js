@@ -36,10 +36,12 @@ function App() {
   const [timeframe, setTimeframe] = useState('lastWeek');
   const [customRange, setCustomRange] = useState({ start: '', end: '' });
 
-  // New state to toggle history visibility
-  const [showHistory, setShowHistory] = useState(true);
+  // Dark mode state
+  const [darkMode, setDarkMode] = useState(false);
 
-  // Load workouts from localStorage on mount
+  // History visibility default false (hidden)
+  const [showHistory, setShowHistory] = useState(false);
+
   useEffect(() => {
     const saved = localStorage.getItem('workouts');
     if (saved) {
@@ -49,29 +51,38 @@ function App() {
       }));
       setWorkouts(parsed);
     }
+
+    // Load dark mode preference if saved
+    const savedDark = localStorage.getItem('darkMode');
+    if (savedDark) setDarkMode(JSON.parse(savedDark));
   }, []);
 
-  // Save workouts to localStorage on change
   useEffect(() => {
     localStorage.setItem('workouts', JSON.stringify(workouts));
   }, [workouts]);
 
-  // Filter workouts based on filterCategory and timeframe
+  useEffect(() => {
+    localStorage.setItem('darkMode', JSON.stringify(darkMode));
+    if (darkMode) {
+      document.documentElement.classList.add('dark-mode');
+    } else {
+      document.documentElement.classList.remove('dark-mode');
+    }
+  }, [darkMode]);
+
   const filteredWorkouts = workouts.filter(w => {
     if (filterCategory !== 'all' && w.category !== filterCategory) return false;
 
     if (timeframe === 'custom') {
-      if (!customRange.start || !customRange.end) return true; // no range selected yet
+      if (!customRange.start || !customRange.end) return true;
       return w.date >= new Date(customRange.start) && w.date <= new Date(customRange.end);
     }
 
     return filterWorkoutsByDate(w.date, timeframe, workouts);
   });
 
-  // Populate exercise list for selected category
   const currentExercises = category ? presetWorkouts[category] || [] : [];
 
-  // Handlers
   function resetForm() {
     setCategory('');
     setExercise('');
@@ -123,20 +134,29 @@ function App() {
     }
   }
 
-  // UI render
   return (
     <div className="app-container">
       <header>
         <h1>RepFlow Workout Tracker</h1>
       </header>
 
-      {/* Toggle History Button */}
-      <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
+      {/* Buttons container */}
+      <div className="buttons-container" style={{ marginBottom: '1rem', textAlign: 'center' }}>
         <button
           className="toggle-history-button"
           onClick={() => setShowHistory(prev => !prev)}
+          aria-pressed={showHistory}
         >
           {showHistory ? 'Hide History' : 'Show History'}
+        </button>
+
+        <button
+          className="toggle-darkmode-button"
+          onClick={() => setDarkMode(prev => !prev)}
+          aria-pressed={darkMode}
+          style={{ marginLeft: '1rem' }}
+        >
+          {darkMode ? 'Light Mode' : 'Dark Mode'}
         </button>
       </div>
 
@@ -199,7 +219,6 @@ function App() {
         </form>
       </section>
 
-      {/* Conditionally show history */}
       {showHistory && (
         <>
           <section className="filter-section">
