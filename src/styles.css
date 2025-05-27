@@ -116,7 +116,9 @@ header {
   background-color: #444;
 }
 
-.program-card {
+/* Program card (list item) */
+.program-card,
+.program-entry > div.program-info {
   border: 1px solid #bbb;
   padding: 1rem;
   margin-bottom: 1rem;
@@ -125,7 +127,8 @@ header {
   color: black;
 }
 
-.app-container.dark .program-card {
+.app-container.dark .program-card,
+.app-container.dark .program-entry > div.program-info {
   background-color: #555;
   color: #eee;
   border-color: #666;
@@ -136,7 +139,8 @@ header {
   margin-bottom: 0.5rem;
 }
 
-.program-card button {
+.program-card button,
+.program-entry button {
   margin-right: 10px;
   padding: 0.4rem 0.8rem;
   border-radius: 5px;
@@ -148,7 +152,8 @@ header {
   transition: background-color 0.3s ease;
 }
 
-.program-card button:hover {
+.program-card button:hover,
+.program-entry button:hover {
   background-color: #1565c0;
 }
 
@@ -170,6 +175,86 @@ header {
 
 .app-container.dark .substitutes {
   color: #bbb;
+}
+
+/* Program Edit Panel */
+.program-edit {
+  background-color: #fafafa;
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.app-container.dark .program-edit {
+  background-color: #444;
+  border-color: #666;
+  color: #eee;
+}
+
+.program-edit label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.program-edit input[type="text"],
+.program-edit input[type="number"] {
+  width: 100%;
+  margin-bottom: 0.75rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #aaa;
+  font-size: 1rem;
+}
+
+.app-container.dark .program-edit input[type="text"],
+.app-container.dark .program-edit input[type="number"] {
+  background-color: #555;
+  color: #eee;
+  border-color: #777;
+}
+
+.program-exercise-edit {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.program-exercise-edit input[type="text"] {
+  flex: 2 1 200px;
+}
+
+.program-exercise-edit input[type="number"] {
+  flex: 1 1 80px;
+}
+
+.program-edit button {
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.program-edit button:hover {
+  background-color: #1565c0;
+}
+
+.program-edit > div {
+  margin-top: 1rem;
+}
+
+.program-edit .cancel-btn {
+  background-color: #f44336;
+  margin-left: 1rem;
+}
+
+.program-edit .cancel-btn:hover {
+  background-color: #c62828;
 }
 
 /* History panel */
@@ -293,5 +378,14 @@ header {
   .filters {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .program-exercise-edit {
+    flex-direction: column;
+  }
+
+  .program-exercise-edit input[type="text"],
+  .program-exercise-edit input[type="number"] {
+    flex: 1 1 auto;
   }
 }

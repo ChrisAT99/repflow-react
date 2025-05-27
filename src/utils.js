@@ -35,9 +35,15 @@ export function filterWorkoutsByDate(date, timeframe, allWorkouts, customRange) 
   switch (timeframe) {
     case 'lastWorkout':
       if (!allWorkouts || allWorkouts.length === 0) return true;
+
       const sorted = allWorkouts
-        .filter(w => w.date instanceof Date)
-        .sort((a,b) => b.date - a.date);
+        .map(w => {
+          const d = w.date instanceof Date ? w.date : new Date(w.date);
+          return { ...w, date: d };
+        })
+        .filter(w => !isNaN(w.date))
+        .sort((a, b) => b.date - a.date);
+
       const lastWorkoutDate = sorted[0]?.date;
       return date >= lastWorkoutDate;
 
