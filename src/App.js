@@ -24,6 +24,7 @@ const timeframes = [
 ];
 
 function App() {
+  // State
   const [workouts, setWorkouts] = useState([]);
   const [category, setCategory] = useState('');
   const [exercise, setExercise] = useState('');
@@ -35,10 +36,10 @@ function App() {
   const [timeframe, setTimeframe] = useState('lastWeek');
   const [customRange, setCustomRange] = useState({ start: '', end: '' });
 
-  const [darkMode, setDarkMode] = useState(() => {
-    return localStorage.getItem('darkMode') === 'true';
-  });
+  // New state to toggle history visibility
+  const [showHistory, setShowHistory] = useState(true);
 
+  // Load workouts from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem('workouts');
     if (saved) {
@@ -50,28 +51,27 @@ function App() {
     }
   }, []);
 
+  // Save workouts to localStorage on change
   useEffect(() => {
     localStorage.setItem('workouts', JSON.stringify(workouts));
   }, [workouts]);
 
-  useEffect(() => {
-    document.body.classList.toggle('dark-mode', darkMode);
-    localStorage.setItem('darkMode', darkMode);
-  }, [darkMode]);
-
+  // Filter workouts based on filterCategory and timeframe
   const filteredWorkouts = workouts.filter(w => {
     if (filterCategory !== 'all' && w.category !== filterCategory) return false;
 
     if (timeframe === 'custom') {
-      if (!customRange.start || !customRange.end) return true;
+      if (!customRange.start || !customRange.end) return true; // no range selected yet
       return w.date >= new Date(customRange.start) && w.date <= new Date(customRange.end);
     }
 
     return filterWorkoutsByDate(w.date, timeframe, workouts);
   });
 
+  // Populate exercise list for selected category
   const currentExercises = category ? presetWorkouts[category] || [] : [];
 
+  // Handlers
   function resetForm() {
     setCategory('');
     setExercise('');
@@ -123,14 +123,22 @@ function App() {
     }
   }
 
+  // UI render
   return (
     <div className="app-container">
       <header>
         <h1>RepFlow Workout Tracker</h1>
-        <button onClick={() => setDarkMode(prev => !prev)}>
-          {darkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
-        </button>
       </header>
+
+      {/* Toggle History Button */}
+      <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
+        <button
+          className="toggle-history-button"
+          onClick={() => setShowHistory(prev => !prev)}
+        >
+          {showHistory ? 'Hide History' : 'Show History'}
+        </button>
+      </div>
 
       <section className="workout-entry">
         <form onSubmit={handleSubmit}>
@@ -191,84 +199,89 @@ function App() {
         </form>
       </section>
 
-      <section className="filter-section">
-        <label>Filter by Category:
-          <select
-            value={filterCategory}
-            onChange={e => setFilterCategory(e.target.value)}
-          >
-            <option value="all">All</option>
-            {categories.map(cat => (
-              <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
-            ))}
-          </select>
-        </label>
-
-        <label>Filter by Timeframe:
-          <select
-            value={timeframe}
-            onChange={e => setTimeframe(e.target.value)}
-          >
-            {timeframes.map(tf => (
-              <option key={tf.value} value={tf.value}>{tf.label}</option>
-            ))}
-          </select>
-        </label>
-
-        {timeframe === 'custom' && (
-          <div className="custom-date-range">
-            <label>Start:
-              <input
-                type="date"
-                value={customRange.start}
-                onChange={e => setCustomRange(prev => ({ ...prev, start: e.target.value }))}
-              />
+      {/* Conditionally show history */}
+      {showHistory && (
+        <>
+          <section className="filter-section">
+            <label>Filter by Category:
+              <select
+                value={filterCategory}
+                onChange={e => setFilterCategory(e.target.value)}
+              >
+                <option value="all">All</option>
+                {categories.map(cat => (
+                  <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
+                ))}
+              </select>
             </label>
-            <label>End:
-              <input
-                type="date"
-                value={customRange.end}
-                onChange={e => setCustomRange(prev => ({ ...prev, end: e.target.value }))}
-              />
-            </label>
-          </div>
-        )}
-      </section>
 
-      <section className="workout-list">
-        <h2>Workouts</h2>
-        {filteredWorkouts.length === 0 ? (
-          <p>No workouts found.</p>
-        ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Category</th>
-                <th>Exercise</th>
-                <th>Reps</th>
-                <th>Weight (kg)</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredWorkouts.map((w, i) => (
-                <tr key={i}>
-                  <td>{formatDate(w.date)}</td>
-                  <td>{w.category.charAt(0).toUpperCase() + w.category.slice(1)}</td>
-                  <td>{w.exercise}</td>
-                  <td>{w.reps}</td>
-                  <td>{w.weight.toFixed(1)}</td>
-                  <td>
-                    <button onClick={() => handleEdit(workouts.indexOf(w))}>Edit</button>
-                    <button onClick={() => handleDelete(workouts.indexOf(w))}>Delete</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </section>
+            <label>Filter by Timeframe:
+              <select
+                value={timeframe}
+                onChange={e => setTimeframe(e.target.value)}
+              >
+                {timeframes.map(tf => (
+                  <option key={tf.value} value={tf.value}>{tf.label}</option>
+                ))}
+              </select>
+            </label>
+
+            {timeframe === 'custom' && (
+              <div className="custom-date-range">
+                <label>Start:
+                  <input
+                    type="date"
+                    value={customRange.start}
+                    onChange={e => setCustomRange(prev => ({ ...prev, start: e.target.value }))}
+                  />
+                </label>
+                <label>End:
+                  <input
+                    type="date"
+                    value={customRange.end}
+                    onChange={e => setCustomRange(prev => ({ ...prev, end: e.target.value }))}
+                  />
+                </label>
+              </div>
+            )}
+          </section>
+
+          <section className="workout-list">
+            <h2>Workouts</h2>
+            {filteredWorkouts.length === 0 ? (
+              <p>No workouts found.</p>
+            ) : (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Category</th>
+                    <th>Exercise</th>
+                    <th>Reps</th>
+                    <th>Weight (kg)</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredWorkouts.map((w, i) => (
+                    <tr key={i}>
+                      <td>{formatDate(w.date)}</td>
+                      <td>{w.category.charAt(0).toUpperCase() + w.category.slice(1)}</td>
+                      <td>{w.exercise}</td>
+                      <td>{w.reps}</td>
+                      <td>{w.weight.toFixed(1)}</td>
+                      <td>
+                        <button onClick={() => handleEdit(workouts.indexOf(w))}>Edit</button>
+                        <button onClick={() => handleDelete(workouts.indexOf(w))}>Delete</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </section>
+        </>
+      )}
 
       <footer>
         <p>RepFlow &copy; 2025</p>

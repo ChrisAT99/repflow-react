@@ -168,3 +168,18 @@ footer {
   margin-top: 3rem;
   color: #777;
 }
+
+.toggle-history-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.toggle-history-button:hover {
+  background-color: #218838;
+}
