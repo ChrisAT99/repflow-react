@@ -1,322 +1,297 @@
-/* General Reset and Base */
-* {
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f9f9f9;
-  color: #222;
-  margin: 0;
-  padding: 0 1rem 2rem;
-  min-height: 100vh;
-  line-height: 1.5;
-}
-
-h1, h2 {
-  margin-bottom: 0.5rem;
-  color: #222;
-}
-
-a {
-  color: #007bff;
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
+/* styles.css */
 .app-container {
-  max-width: 900px;
+  max-width: 800px;
   margin: 1rem auto;
-  padding: 1rem 2rem;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgb(0 0 0 / 0.1);
+  padding: 1rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #222;
+  background-color: #fefefe;
+  transition: background-color 0.3s, color 0.3s;
 }
 
-/* Header */
+.app-container.dark {
+  background-color: #222;
+  color: #ddd;
+}
+
 header {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   margin-bottom: 1rem;
 }
 
-/* Buttons container */
-.buttons-container {
-  display: inline-flex;
-  gap: 1rem;
-  justify-content: center;
-  width: 100%;
-  margin-bottom: 1rem;
+.top-buttons {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 10px;
 }
 
-/* Toggle Buttons */
-.toggle-history-button,
-.toggle-darkmode-button {
-  background-color: #28a745;
-  color: white;
-  border: none;
-  padding: 0.55rem 1.2rem;
-  border-radius: 5px;
+.top-buttons button {
+  padding: 0.5rem 1rem;
   cursor: pointer;
-  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  background-color: #1976d2;
+  color: white;
   font-weight: 600;
   transition: background-color 0.3s ease;
-  user-select: none;
 }
 
-.toggle-history-button:hover,
-.toggle-darkmode-button:hover {
-  background-color: #218838;
+.top-buttons button:hover {
+  background-color: #1565c0;
 }
 
-.toggle-history-button:focus,
-.toggle-darkmode-button:focus {
-  outline: 2px solid #19692c;
-  outline-offset: 2px;
-}
-
-/* Workout Entry Form */
 .workout-entry form {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem 1.5rem;
-  align-items: end;
-  margin-bottom: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  background: #eaeaea;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.app-container.dark .workout-entry form {
+  background: #333;
 }
 
 .workout-entry label {
   display: flex;
   flex-direction: column;
+  min-width: 150px;
   font-weight: 600;
-  font-size: 0.9rem;
-  color: #333;
 }
 
 .workout-entry input[type="number"],
-.workout-entry select,
-.workout-entry input[list] {
-  padding: 0.4rem 0.6rem;
-  font-size: 1rem;
-  border: 1px solid #bbb;
+.workout-entry input[type="text"],
+.workout-entry select {
+  padding: 0.4rem;
+  margin-top: 0.3rem;
   border-radius: 4px;
-  transition: border-color 0.2s ease;
-}
-
-.workout-entry input[type="number"]:focus,
-.workout-entry select:focus,
-.workout-entry input[list]:focus {
-  border-color: #28a745;
-  outline: none;
-}
-
-.workout-entry button[type="submit"],
-.workout-entry button[type="button"] {
-  padding: 0.55rem 1.2rem;
+  border: 1px solid #aaa;
   font-size: 1rem;
-  background-color: #007bff;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  justify-self: start;
 }
 
-.workout-entry button[type="submit"]:hover,
-.workout-entry button[type="button"]:hover {
-  background-color: #0056b3;
+.app-container.dark .workout-entry input,
+.app-container.dark .workout-entry select {
+  background: #555;
+  color: #eee;
+  border-color: #777;
+}
+
+.workout-entry button {
+  padding: 0.6rem 1.2rem;
+  align-self: flex-end;
+  cursor: pointer;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  transition: background-color 0.3s ease;
+}
+
+.workout-entry button:hover {
+  background-color: #388e3c;
 }
 
 .workout-entry button[type="button"] {
-  background-color: #6c757d;
+  background-color: #f44336;
 }
 
 .workout-entry button[type="button"]:hover {
-  background-color: #565e64;
+  background-color: #c62828;
 }
 
-/* Filter Section */
-.filter-section {
+/* Programs panel */
+.programs-panel {
+  margin-top: 2rem;
+  background-color: #ddd;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.app-container.dark .programs-panel {
+  background-color: #444;
+}
+
+.program-card {
+  border: 1px solid #bbb;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  background-color: white;
+  color: black;
+}
+
+.app-container.dark .program-card {
+  background-color: #555;
+  color: #eee;
+  border-color: #666;
+}
+
+.program-card h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.program-card button {
+  margin-right: 10px;
+  padding: 0.4rem 0.8rem;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  background-color: #1976d2;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.program-card button:hover {
+  background-color: #1565c0;
+}
+
+.program-exercises {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 0.5rem;
+}
+
+.program-exercises li {
+  margin-bottom: 0.4rem;
+}
+
+.substitutes {
+  font-size: 0.9rem;
+  color: #666;
+  margin-left: 0.5rem;
+}
+
+.app-container.dark .substitutes {
+  color: #bbb;
+}
+
+/* History panel */
+.history-panel {
+  margin-top: 2rem;
+  background-color: #eee;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.app-container.dark .history-panel {
+  background-color: #333;
+}
+
+.filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem 2rem;
-  margin-bottom: 1.5rem;
-  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+
+.filters label {
   font-weight: 600;
 }
 
-.filter-section label {
-  display: flex;
-  flex-direction: column;
-  font-size: 0.95rem;
-  color: #444;
-}
-
-.filter-section select,
-.filter-section input[type="date"] {
-  margin-top: 0.3rem;
-  padding: 0.35rem 0.6rem;
-  font-size: 1rem;
-  border: 1px solid #bbb;
+.filters select,
+.filters input[type="date"] {
+  margin-left: 0.5rem;
+  padding: 0.3rem 0.5rem;
   border-radius: 4px;
-  transition: border-color 0.2s ease;
+  border: 1px solid #aaa;
+  font-size: 1rem;
 }
 
-.filter-section select:focus,
-.filter-section input[type="date"]:focus {
-  border-color: #28a745;
-  outline: none;
+.app-container.dark .filters select,
+.app-container.dark .filters input[type="date"] {
+  background: #555;
+  color: #eee;
+  border-color: #777;
 }
 
 .custom-date-range {
   display: flex;
   gap: 1rem;
-  align-items: flex-end;
+  align-items: center;
 }
 
-/* Workout List Table */
-.workout-list {
-  overflow-x: auto;
+.workout-history-list {
+  list-style: none;
+  padding-left: 0;
 }
 
-.workout-list table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 1rem;
-  font-size: 0.95rem;
+.workout-history-item {
+  border-bottom: 1px solid #bbb;
+  padding: 0.5rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.workout-list th,
-.workout-list td {
-  padding: 0.6rem 0.8rem;
-  border: 1px solid #ddd;
-  text-align: center;
-  vertical-align: middle;
+.app-container.dark .workout-history-item {
+  border-color: #666;
 }
 
-.workout-list th {
-  background-color: #28a745;
-  color: white;
-  font-weight: 700;
-  user-select: none;
+.workout-history-item div {
+  flex-grow: 1;
 }
 
-.workout-list tr:nth-child(even) {
-  background-color: #f2f2f2;
-}
-
-.workout-list button {
-  padding: 0.3rem 0.6rem;
-  font-size: 0.85rem;
-  margin: 0 2px;
-  border: none;
-  border-radius: 4px;
+.workout-history-item button {
+  margin-left: 8px;
   cursor: pointer;
+  border: none;
+  background: #1976d2;
+  color: white;
+  padding: 0.3rem 0.7rem;
+  border-radius: 4px;
   font-weight: 600;
   transition: background-color 0.3s ease;
 }
 
-.workout-list button:hover {
-  filter: brightness(0.85);
+.workout-history-item button:hover {
+  background-color: #1565c0;
 }
 
-.workout-list button:first-child {
-  background-color: #ffc107;
-  color: #212529;
+.workout-history-item button:last-child {
+  background-color: #f44336;
 }
 
-.workout-list button:last-child {
-  background-color: #dc3545;
-  color: white;
+.workout-history-item button:last-child:hover {
+  background-color: #c62828;
 }
 
-/* Footer */
-footer {
-  text-align: center;
-  margin-top: 2rem;
+.date {
   font-size: 0.85rem;
   color: #666;
-  user-select: none;
+  margin-left: 1rem;
 }
 
-/* Dark Mode Styles */
-html.dark-mode {
-  background-color: #121212;
-  color: #eee;
+.app-container.dark .date {
+  color: #aaa;
 }
 
-html.dark-mode body {
-  background-color: #121212;
-  color: #eee;
-}
-
-html.dark-mode .app-container {
-  background-color: #1e1e1e;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
-  color: #eee;
-}
-
-html.dark-mode header h1,
-html.dark-mode h2 {
-  color: #ddd;
-}
-
-html.dark-mode .workout-entry label,
-html.dark-mode .filter-section label {
-  color: #ccc;
-}
-
-html.dark-mode input,
-html.dark-mode select {
-  background-color: #2a2a2a;
-  border: 1px solid #555;
-  color: #ddd;
-}
-
-html.dark-mode input:focus,
-html.dark-mode select:focus {
-  border-color: #66bb6a;
-  outline: none;
-}
-
-html.dark-mode .toggle-history-button,
-html.dark-mode .toggle-darkmode-button {
-  background-color: #66bb6a;
-  color: #121212;
-}
-
-html.dark-mode .toggle-history-button:hover,
-html.dark-mode .toggle-darkmode-button:hover {
-  background-color: #4caf50;
-}
-
-html.dark-mode .workout-list th {
-  background-color: #388e3c;
+.program-tag {
+  background: #1976d2;
   color: white;
+  font-size: 0.75rem;
+  padding: 0 6px;
+  border-radius: 4px;
+  margin-left: 10px;
+  vertical-align: middle;
 }
 
-html.dark-mode .workout-list tr:nth-child(even) {
-  background-color: #2a2a2a;
-}
+/* Responsive */
+@media (max-width: 600px) {
+  .workout-entry form {
+    flex-direction: column;
+    align-items: stretch;
+  }
 
-html.dark-mode .workout-list td,
-html.dark-mode .workout-list th {
-  border-color: #444;
-}
-
-html.dark-mode .workout-list button:first-child {
-  background-color: #f0ad4e;
-  color: #212529;
-}
-
-html.dark-mode .workout-list button:last-child {
-  background-color: #c9302c;
-  color: white;
-}
-
-html.dark-mode footer {
-  color: #999;
+  .filters {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
